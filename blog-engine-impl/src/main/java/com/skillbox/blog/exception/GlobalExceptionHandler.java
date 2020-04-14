@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.validation.FieldError;
@@ -124,5 +125,11 @@ public class GlobalExceptionHandler {
     return new ResponseResults<>()
         .setResult(false)
         .setErrors(ex.getErrors());
+  }
+
+  @ExceptionHandler(StorageException.class)
+  public ResponseEntity<?> handleStorageException(StorageException ex) {
+    log.error(ex.getMessage());
+    return ResponseEntity.status(500).build();
   }
 }

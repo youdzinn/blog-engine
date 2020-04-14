@@ -99,7 +99,7 @@ public class ProfileService {
       }
       File oldPhoto = new File(user.getPhoto());
       oldPhoto.delete();
-      user.setPhoto("/" + imageService.uploadImage(file));
+      user.setPhoto(imageService.uploadImage(file));
     }
   }
 }
