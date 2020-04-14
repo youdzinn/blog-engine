@@ -21,6 +21,7 @@ import com.skillbox.blog.utils.RandomStringGenerator;
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Map;
@@ -33,7 +34,7 @@ import org.patchca.filter.predefined.CurvesRippleFilterFactory;
 import org.patchca.service.ConfigurableCaptchaService;
 import org.patchca.utils.encoder.EncoderHelper;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,7 +58,7 @@ public class AuthService {
     String captchaCodeByCode = captchaRepository.findCaptchaCodeByCode(dto.getCaptcha());
 
     if (captchaCodeByCode == null) {
-      throw new InvalidAttributeException(Map.of("captcha","Wrong captcha code entered"));
+      throw new InvalidAttributeException(Map.of("captcha", "Wrong captcha code entered"));
     }
     if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
       throw new InvalidAttributeException(Map.of("email", "Email address already registered"));
@@ -99,15 +100,15 @@ public class AuthService {
   }
 
   @Transactional(readOnly = true)
-  public ResponseResults checkAuth(HttpServletRequest request) {
-    if (SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")) {
+  public ResponseResults checkAuth(HttpServletRequest request, Principal principal) {
+    if (principal == null) {
       throw new AuthenticationCredentialsNotFoundException(
           "Session does not exist: " + request.getHeader("Cookie"));
     }
     return new ResponseLoginDto<>()
         .setUser(
-            userToResponseLoginDto.map(
-                (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()))
+            userToResponseLoginDto
+                .map((User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal()))
         .setResult(true);
   }
 
