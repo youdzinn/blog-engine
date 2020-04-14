@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.TreeSet;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -50,11 +51,11 @@ public interface PostRepository extends JpaRepository<Post, Integer>,
 
   @Query(nativeQuery = true, value = "SELECT * FROM be.post p WHERE is_active = 1 "
       + "AND moderation_status = 'ACCEPTED' AND time <= NOW()")
-  List<Post> findSuitablePosts();
+  List<Post> findSuitablePosts(Pageable pageable);
 
   @Query(nativeQuery = true, value = "SELECT * FROM be.post WHERE is_active = 1 "
       + "AND moderation_status = 'ACCEPTED' AND time \\:\\:DATE = :date \\:\\:DATE")
-  List<Post> findByDate(String date);
+  List<Post> findByDate(String date, Pageable pageable);
 
   @Query(nativeQuery = true, value = "SELECT COUNT(*) FROM be.post WHERE is_active = 1 "
       + "AND moderation_status = 'NEW' AND moderator_id = :moderatorId")
@@ -71,13 +72,16 @@ public interface PostRepository extends JpaRepository<Post, Integer>,
   @Query(nativeQuery = true, value = "SELECT p.* FROM be.post p "
       + "JOIN be.post2tag ON post_id = p.id JOIN be.tag ON tag_id = tag.id "
       + "WHERE tag.name = :tag AND p.is_active = 1 AND p.moderation_status = 'ACCEPTED'")
-  List<Post> findAllByTag(String tag);
+  List<Post> findAllByTag(String tag, Pageable pageable);
 
   @Query(nativeQuery = true, value = "SELECT * FROM be.post WHERE user_id = :userId"
       + " AND is_active = :isActive AND moderation_status LIKE :moderationStatus")
-  List<Post> findMyPosts(int userId, int isActive, String moderationStatus);
+  List<Post> findMyPosts(int userId, int isActive, String moderationStatus, Pageable pageable);
 
   @Query(nativeQuery = true, value = "SELECT * FROM be.post WHERE is_active = 1 "
       + "AND moderation_status = 'ACCEPTED' AND text LIKE %:query%")
-  List<Post> findAllPostsByQuery(String query);
+  List<Post> findAllPostsByQuery(String query, Pageable pageable);
+
+  @Query(nativeQuery = true, value = "SELECT view_count FROM be.post WHERE id = :postId")
+  int findViewCountByPostId(int postId);
 }

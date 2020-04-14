@@ -31,6 +31,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,25 +49,25 @@ public class PostService {
   PostVoteRepository postVoteRepository;
   PostCommentRepository postCommentRepository;
 
-  @Transactional(readOnly = true)
-  public ResponseAllPostsDto getPosts(String mode) {
+  public ResponseAllPostsDto getPosts(int offset, int limit, String mode) {
     int count = postRepository.findCountPosts();
     PostService.SORT sortMode = PostService.SORT.valueOf(mode.toUpperCase());
 
-    List<Post> posts = postRepository.findSuitablePosts();
+    Pageable pageable = PageRequest.of(offset / limit, limit);
+    List<Post> posts = postRepository.findSuitablePosts(pageable);
     List<PartInfoOfPosts> result = postConversion(posts);
     sortList(result, sortMode);
 
+    posts.forEach(p -> p.setViewCount(p.getViewCount() + 1));
     return new ResponseAllPostsDto().builder()
         .count(count)
         .posts(result)
         .build();
   }
 
-  @Transactional(readOnly = true)
-  public ResponseAllPostsDto searchPosts(String query) {
+  public ResponseAllPostsDto searchPosts(int offset, int limit, String query) {
     if (query.equals("")) {
-      return getPosts("best");
+      return getPosts(offset, limit, "best");
     } else {
       int count = postRepository.findCountPosts();
 
@@ -73,12 +75,14 @@ public class PostService {
         throw new EntityNotFoundException("Post / Comment not exist ");
       }
 
-      List<Post> posts = postRepository.findAllPostsByQuery(query);
+      Pageable pageable = PageRequest.of(offset / limit, limit);
+      List<Post> posts = postRepository.findAllPostsByQuery(query, pageable);
 
       if (posts.isEmpty()) {
         throw new EntityNotFoundException("Post / Comment not exist ");
       }
 
+      posts.forEach(p -> p.setViewCount(p.getViewCount() + 1));
       return ResponseAllPostsDto.builder()
           .count(count)
           .posts(postConversion(posts))
@@ -86,12 +90,12 @@ public class PostService {
     }
   }
 
-  @Transactional(readOnly = true)
   public ResponseOnePostDto getPost(int postId) {
     Post post = postRepository.findById(postId)
         .orElseThrow(() -> new EntityNotFoundException("Post not found !"));
 
     User user = userRepository.findById(post.getUserId().getId());
+    post.setViewCount(post.getViewCount() + 1);
 
     PartInfoOfUser partInfoOfUser = PartInfoOfUser.builder()
         .id(user.getId())
@@ -129,18 +133,19 @@ public class PostService {
         .text(post.getText())
         .likeCount(postVoteRepository.findCountOfLikesById(postId))
         .dislikeCount(postVoteRepository.findCountOfDislikesById(postId))
-        .viewCount(postCommentRepository.findCountOfCommentsByPostId(postId))
+        .viewCount(postRepository.findViewCountByPostId(postId))
         .comments(comments)
         .tags(tags)
         .build();
   }
 
-  @Transactional(readOnly = true)
-  public ResponseAllPostsDto getPostsByDate(String date) {
+  public ResponseAllPostsDto getPostsByDate(int offset, int limit, String date) {
     int count = postRepository.findCountPosts();
 
-    List<Post> posts = postRepository.findByDate(date);
+    Pageable pageable = PageRequest.of(offset / limit, limit);
+    List<Post> posts = postRepository.findByDate(date, pageable);
     List<PartInfoOfPosts> result = postConversion(posts);
+    posts.forEach(p -> p.setViewCount(p.getViewCount() + 1));
 
     return ResponseAllPostsDto.builder()
         .count(count)
@@ -148,13 +153,20 @@ public class PostService {
         .build();
   }
 
-  @Transactional(readOnly = true)
-  public ResponseAllPostsDto getPostsByTag(String tag) {
-    List<Post> linkedPosts = postRepository.findAllByTag(tag);
-    return new ResponseAllPostsDto(linkedPosts.size(), postConversion(linkedPosts));
+  public ResponseAllPostsDto getPostsByTag(int offset, int limit, String tag) {
+    int count = postRepository.findCountPosts();
+
+    Pageable pageable = PageRequest.of(offset / limit, limit);
+    List<Post> posts = postRepository.findAllByTag(tag, pageable);
+    List<PartInfoOfPosts> result = postConversion(posts);
+    posts.forEach(p -> p.setViewCount(p.getViewCount() + 1));
+
+    return ResponseAllPostsDto.builder()
+        .count(count)
+        .posts(result)
+        .build();
   }
 
-  @Transactional(readOnly = true)
   public ResponseAllPostsDto getModerationList(String status) {
     int moderatorId = userService.getCurrentUser().getId();
     int count = postRepository
@@ -192,14 +204,15 @@ public class PostService {
       posts.add(partInfoOfPosts);
     }
 
+    posts.forEach(p -> p.setViewCount(p.getViewCount() + 1));
     return ResponseAllPostsDto.builder()
         .count(count)
         .posts(posts)
         .build();
   }
 
-  @Transactional(readOnly = true)
-  public ResponseAllPostsDto getMyPosts(String status) {
+  public ResponseAllPostsDto getMyPosts(int offset, int limit, String status) {
+    Pageable pageable = PageRequest.of(offset / limit, limit);
     String moderationStatus = "%";
     int isActive = 0;
     int userId = userService.getCurrentUser().getId();
@@ -221,8 +234,12 @@ public class PostService {
       }
     }
 
-    List<Post> myPosts = postRepository.findMyPosts(userId, isActive, moderationStatus);
-    return new ResponseAllPostsDto(myPosts.size(), postConversion(myPosts));
+    List<Post> myPosts = postRepository.findMyPosts(userId, isActive, moderationStatus, pageable);
+    myPosts.forEach(p -> p.setViewCount(p.getViewCount() + 1));
+    return ResponseAllPostsDto.builder()
+        .count(myPosts.size())
+        .posts(postConversion(myPosts))
+        .build();
   }
 
   public ResponseResults<Boolean> createPost(RequestPost post) {

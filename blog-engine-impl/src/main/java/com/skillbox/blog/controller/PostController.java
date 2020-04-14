@@ -27,15 +27,19 @@ public class PostController {
 
   @GetMapping("/post")
   @ResponseStatus(HttpStatus.OK)
-  public ResponseAllPostsDto getPosts(@RequestParam String mode) {
-    return postService.getPosts(mode);
+  public ResponseAllPostsDto getPosts(@RequestParam int offset,
+                                      @RequestParam int limit,
+                                      @RequestParam String mode) {
+    return postService.getPosts(offset, limit, mode);
   }
 
   @GetMapping("/post/search")
   @ResponseStatus(HttpStatus.OK)
   public ResponseAllPostsDto searchPosts(
+      @RequestParam int offset,
+      @RequestParam int limit,
       @RequestParam(value = "query", defaultValue = "") String query) {
-    return postService.searchPosts(query);
+    return postService.searchPosts(offset, limit, query);
   }
 
   @GetMapping("/post/{postId}")
@@ -46,14 +50,18 @@ public class PostController {
 
   @GetMapping("/post/byDate")
   @ResponseStatus(HttpStatus.OK)
-  public ResponseAllPostsDto getPostsByDate(@RequestParam String date) {
-    return postService.getPostsByDate(date);
+  public ResponseAllPostsDto getPostsByDate(@RequestParam int offset,
+                                            @RequestParam int limit,
+                                            @RequestParam String date) {
+    return postService.getPostsByDate(offset, limit, date);
   }
 
   @GetMapping("/post/byTag")
   @ResponseStatus(HttpStatus.OK)
-  public ResponseAllPostsDto getPostsByTag(@RequestParam(value = "tag") String tag) {
-    return postService.getPostsByTag(tag);
+  public ResponseAllPostsDto getPostsByTag(@RequestParam int offset,
+                                           @RequestParam int limit,
+                                           @RequestParam(value = "tag") String tag) {
+    return postService.getPostsByTag(offset, limit, tag);
   }
 
   @GetMapping("/post/moderation")
@@ -64,8 +72,11 @@ public class PostController {
 
   @GetMapping("/post/my")
   @ResponseStatus(HttpStatus.OK)
-  public ResponseAllPostsDto getMyPosts(@RequestParam(value = "status") String status) {
-    return postService.getMyPosts(status);
+  public ResponseAllPostsDto getMyPosts(
+      @RequestParam int offset,
+      @RequestParam int limit,
+      @RequestParam(value = "status") String status) {
+    return postService.getMyPosts(offset, limit, status);
   }
 
   @PostMapping("/post")
