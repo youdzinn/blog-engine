@@ -12,6 +12,7 @@ import javax.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
@@ -28,6 +29,7 @@ public class User implements UserDetails {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(nullable = false, updatable = false)
+  @EqualsAndHashCode.Exclude
   private int id;
 
   @Column(nullable = false)
@@ -53,6 +55,7 @@ public class User implements UserDetails {
   private LocalDateTime regTime;
 
   @Transient
+  @EqualsAndHashCode.Exclude
   private Collection<? extends GrantedAuthority> authorities;
 
   @Override

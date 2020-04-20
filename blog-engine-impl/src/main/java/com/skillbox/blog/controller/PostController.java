@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("api")
 @AllArgsConstructor
 public class PostController {
 
@@ -29,7 +30,7 @@ public class PostController {
   @ResponseStatus(HttpStatus.OK)
   public ResponseAllPostsDto getPosts(@RequestParam int offset,
                                       @RequestParam int limit,
-                                      @RequestParam String mode) {
+                                      @RequestParam(value = "mode") String mode) {
     return postService.getPosts(offset, limit, mode);
   }
 
@@ -52,7 +53,7 @@ public class PostController {
   @ResponseStatus(HttpStatus.OK)
   public ResponseAllPostsDto getPostsByDate(@RequestParam int offset,
                                             @RequestParam int limit,
-                                            @RequestParam String date) {
+                                            @RequestParam(value = "date") String date) {
     return postService.getPostsByDate(offset, limit, date);
   }
 
@@ -66,16 +67,17 @@ public class PostController {
 
   @GetMapping("/post/moderation")
   @ResponseStatus(HttpStatus.OK)
-  public ResponseAllPostsDto getModerationList(@RequestParam String status) {
-    return postService.getModerationList(status);
+  public ResponseAllPostsDto getModerationList(@RequestParam int offset,
+                                               @RequestParam int limit,
+                                               @RequestParam(value = "status") String status) {
+    return postService.getModerationList(offset, limit, status);
   }
 
   @GetMapping("/post/my")
   @ResponseStatus(HttpStatus.OK)
-  public ResponseAllPostsDto getMyPosts(
-      @RequestParam int offset,
-      @RequestParam int limit,
-      @RequestParam(value = "status") String status) {
+  public ResponseAllPostsDto getMyPosts(@RequestParam int offset,
+                                        @RequestParam int limit,
+                                        @RequestParam(value = "status") String status) {
     return postService.getMyPosts(offset, limit, status);
   }
 
@@ -96,5 +98,12 @@ public class PostController {
   public ResponseResults<Boolean> dislike(
       @RequestBody RequestLikeDislikeDto requestLikeDislikeDto) {
     return postService.dislike(requestLikeDislikeDto);
+  }
+
+  @PutMapping("/post/{postId}")
+  @ResponseStatus(HttpStatus.OK)
+  public ResponseResults<Boolean> editPost(@Valid @RequestBody RequestPost postToEdit,
+                                           @PathVariable int postId) {
+    return postService.editPost(postToEdit, postId);
   }
 }

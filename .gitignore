@@ -70,6 +70,7 @@ fabric.properties
 .idea/
 .compose/
 target/
+upload/
 *.iml
 
 *.java linguist-detectable=true

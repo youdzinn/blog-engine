@@ -15,7 +15,7 @@ public interface PostCommentRepository extends JpaRepository<PostComment, Intege
 
   Optional<PostComment> findById(int id);
 
-  @Query(nativeQuery = true, value = "SELECT COUNT(*) FROM be.post_comment WHERE post_id = :postId")
+  @Query(nativeQuery = true, value = "SELECT COUNT(*) FROM post_comment WHERE post_id = :postId")
   int findCountOfCommentsByPostId(int postId);
 
   @Query(value = "SELECT new com.skillbox.blog.dto.response.temporary"

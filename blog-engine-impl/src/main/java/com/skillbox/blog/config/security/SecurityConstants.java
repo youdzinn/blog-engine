@@ -51,4 +51,6 @@ public class SecurityConstants {
       // other public endpoints of your API may be appended to this array
   };
 
+  public static final String SUFFIX = "xga";
+  public static final long EXPIRATION_TIME_IN_MILLIS = 600_000;
 }

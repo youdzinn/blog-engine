@@ -29,7 +29,7 @@ public class ProfileService {
   private ImageService imageService;
   private PasswordEncoder passwordEncoder;
 
-  public ResponseResults editProfile(RequestEditProfileDto request, MultipartFile file)
+  public ResponseResults<?> editProfile(RequestEditProfileDto request, MultipartFile file)
       throws IllegalClassFormatException {
     Map<String, String> errors = new LinkedHashMap<>();
     User user = userService.getCurrentUser();

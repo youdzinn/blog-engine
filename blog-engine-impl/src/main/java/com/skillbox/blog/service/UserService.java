@@ -3,8 +3,10 @@ package com.skillbox.blog.service;
 import com.skillbox.blog.entity.User;
 import com.skillbox.blog.entity.enums.Role;
 import com.skillbox.blog.repository.UserRepository;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import javax.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -37,16 +39,24 @@ public class UserService implements UserDetailsService {
   public User getCurrentUser() {
     Object user = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     if (user instanceof User) {
-      return (User) user;
+      return userRepository.findById(((User) user).getId());
     } else {
       throw new AuthenticationCredentialsNotFoundException("Session does not exist");
     }
 
   }
 
-  public User getModerator() {
-    return userRepository.findByIsModerator((byte) 1)
-        .orElseThrow(() -> new EntityNotFoundException("Moderator is not defined."));
+  public User getModerator(boolean isMultiUserMode) {
+    User cu = getCurrentUser();
+    
+    if (isMultiUserMode) {
+      List<User> moderators = userRepository.findByIsModerator((byte) 1);
+      moderators.remove(cu);
+      return moderators.get(new Random().nextInt(moderators.size()));
+    }
+    else {
+      return cu;
+    }
   }
 
   public boolean isModerator() {

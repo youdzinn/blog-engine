@@ -48,7 +48,7 @@ public class GlobalExceptionHandler {
 
   @ResponseStatus(HttpStatus.UNAUTHORIZED)
   @ExceptionHandler(InternalAuthenticationServiceException.class)
-  public ResponseResults handleInternalAuthenticationException(
+  public ResponseResults<?> handleInternalAuthenticationException(
       InternalAuthenticationServiceException e) {
     log.error(e.getMessage());
     return new ResponseResults<>()
@@ -57,7 +57,7 @@ public class GlobalExceptionHandler {
 
   @ResponseStatus(HttpStatus.OK)
   @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
-  public ResponseResults handleCheckAuthenticationException(
+  public ResponseResults<?> handleCheckAuthenticationException(
       AuthenticationCredentialsNotFoundException e) {
     log.error(e.getMessage());
     return new ResponseResults<>()
@@ -111,8 +111,8 @@ public class GlobalExceptionHandler {
 
   @ResponseStatus(HttpStatus.OK)
   @ExceptionHandler(InvalidCaptchaException.class)
-  public ResponseResults handleCaptchaExeception(InvalidCaptchaException ex) {
-    log.error("invalid secret code: {}", ex.getMessage());
+  public ResponseResults<?> handleCaptchaException(InvalidCaptchaException ex) {
+    log.error("invalid captcha: {}", ex.getMessage());
     return new ResponseResults<>()
         .setErrors(Map.of("captcha", ex.getMessage()))
         .setResult(false);
@@ -120,8 +120,8 @@ public class GlobalExceptionHandler {
 
   @ResponseStatus(HttpStatus.OK)
   @ExceptionHandler(InvalidAttributeException.class)
-  public ResponseResults handleNameNotValidException(InvalidAttributeException ex) {
-    log.error(ex.getMessage());
+  public ResponseResults<?> handleInvalidAttributeException(InvalidAttributeException ex) {
+    log.error("{}: {}", ex.getMessage(), ex.getErrors());
     return new ResponseResults<>()
         .setResult(false)
         .setErrors(ex.getErrors());

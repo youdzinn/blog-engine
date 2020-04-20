@@ -3,7 +3,7 @@ package com.skillbox.blog.controller;
 import com.skillbox.blog.dto.request.RequestModerationDto;
 import com.skillbox.blog.dto.response.ResponseResults;
 import com.skillbox.blog.service.ModerationService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("api")
+@AllArgsConstructor
 public class ModerationController {
 
-  @Autowired
-  private ModerationService moderationService;
+  ModerationService moderationService;
 
   @PostMapping("/moderation")
   @ResponseStatus(HttpStatus.OK)

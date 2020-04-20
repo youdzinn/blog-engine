@@ -6,43 +6,20 @@ global-settings:
     -
       code: 'MULTIUSER_MODE'
       name: 'Многопользовательский режим'
-      value: 'no'
+      value: 'NO'
     -
       code: 'POST_PREMODERATION'
       name: 'Премодерация постов'
-      value: 'yes'
+      value: 'YES'
     -
       code: 'STATISTICS_IS_PUBLIC'
       name: 'Показывать всем статистику блога'
-      value: 'no'
+      value: 'YES'
 
 spring:
   output:
     ansi:
       enabled: ALWAYS
-  profiles:
-    active: default
-
-#  security:
-#    basic:
-#      enabled: false
-#  management:
-#    security:
-#      enabled: false
-
-  mail:
-    host: host
-    port: 587
-    username: username
-    password: pwd
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-
-
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQL94Dialect
     show-sql: true
@@ -56,6 +33,18 @@ spring:
         format-sql: true
         use_sql_comments: true
 
+  mail:
+    host: host
+    port: 587
+    username: username
+    password: pwd
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
   http:
     multipart:
       max-file-size: 5MB
@@ -63,6 +52,21 @@ spring:
       file-size-threshold: 100KB
       enabled: true
       location: ${java.io.tmpdir}
+
+---
+
+spring:
+  profiles: default
+#    active: default
+
+#  security:
+#    basic:
+#      enabled: false
+#  management:
+#    security:
+#      enabled: false
+
+
 
   datasource:
     driverClassName: com.p6spy.engine.spy.P6SpyDriver
@@ -87,3 +91,43 @@ spring:
     url: jdbc:postgresql://localhost:5432/sklbx?currentSchema=be
     user: postgres
     password: 1234
+
+---
+
+spring:
+  profiles: test
+  logging:
+    level:
+      ROOT: DEBUG
+
+  datasource:
+    driverClassName: com.p6spy.engine.spy.P6SpyDriver
+    url: jdbc:p6spy:postgresql://localhost:5432/sklbx?currentSchema=test
+    username: postgres
+    password: 1234
+    hikari:
+      connectionTimeout: 30000
+      idleTimeout: 600000
+      maxLifetime: 7190000
+      minimumIdle: 2
+      maximumPoolSize: 50
+
+  liquibase:
+    enabled: true
+    change-log: classpath:database_changelog_test_data.xml
+    url: jdbc:postgresql://localhost:5432/sklbx?currentSchema=test
+    user: postgres
+    password: 1234
+    drop-first: true
+
+#  #чтобы каждый раз в тестах не авторизовываться, или при тесте авторизации System.setproperty("auth", "on")
+#  security:
+#    ignored:
+#      /**
+
+  jackson:
+    date-format: com.fasterxml.jackson.databind.util.ISO8601DateFormat
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
+#      WRITE_DATES_AS_TIMESTAMPS: true
+    default-property-inclusion: non_null

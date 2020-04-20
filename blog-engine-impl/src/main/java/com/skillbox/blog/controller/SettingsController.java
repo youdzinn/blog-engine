@@ -2,7 +2,7 @@ package com.skillbox.blog.controller;
 
 import com.skillbox.blog.dto.GlobalSettingsDto;
 import com.skillbox.blog.service.SettingsService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("api")
+@AllArgsConstructor
 public class SettingsController {
 
-  @Autowired
-  private SettingsService settingsService;
+  SettingsService settingsService;
 
   @GetMapping("/settings")
   @ResponseStatus(HttpStatus.OK)

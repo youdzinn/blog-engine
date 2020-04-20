@@ -11,17 +11,18 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@ActiveProfiles("test_data")
+@ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
 @Target({ElementType.TYPE})
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
 @AutoConfigureMockMvc
-@SpringBootTest(classes = BlogEngineImplApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = BlogEngineImplApplication.class, webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = BEFORE_CLASS)
 public @interface IntegrationTest {
 }

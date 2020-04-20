@@ -19,6 +19,7 @@ public class ResponseOnePostDto {
   String text;
   int likeCount;
   int dislikeCount;
+  int commentCount;
   int viewCount;
   List<PartComment> comments;
   String[] tags;

@@ -1,16 +1,20 @@
 package com.skillbox.blog.dto.response;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class ResponseInitDto {
 
-  final String title = "DevPub";
-  final String subtitle = "Рассказы разработчиков";
-  final String phone = "+7 495 720 25 17";
-  final String email = "deal@symbioway.ru";
-  final String copyright = "Даниил Пилипенко";
-  final String copyrightFrom = "2020";
+  String title;
+  String subtitle;
+  String phone;
+  String email;
+  String copyright;
+  String copyrightFrom;
 }

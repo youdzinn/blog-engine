@@ -6,20 +6,16 @@ import com.skillbox.blog.exception.StatusException;
 import com.skillbox.blog.mapper.GlobalSettingsConfigToDto;
 import com.skillbox.blog.repository.GlobalSettingRepository;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@AllArgsConstructor
 public class SettingsService {
 
-  @Autowired
-  private GlobalSettingRepository repository;
-
-  @Autowired
-  private UserService userService;
-
-  @Autowired
-  private GlobalSettingsConfigToDto mapper;
+  GlobalSettingRepository repository;
+  UserService userService;
+  GlobalSettingsConfigToDto mapper;
 
   public GlobalSettingsDto getSettings() {
     if (userService.getCurrentUser().getIsModerator() == 1) {
@@ -28,13 +24,13 @@ public class SettingsService {
     throw new StatusException("But it is for You.");
   }
 
-  public GlobalSettingsDto saveSettings(GlobalSettingsDto dto) {
+  public GlobalSettingsDto saveSettings(GlobalSettingsDto globalSettingsDto) {
     if (userService.getCurrentUser().getIsModerator() == 1) {
       List<GlobalSetting> settings = repository.findAll();
-      repository.saveAll(mapper.map(dto, settings));
+      repository.saveAll(mapper.map(globalSettingsDto, settings));
     } else {
       throw new StatusException("But it is for You.");
     }
-    return dto;
+    return globalSettingsDto;
   }
 }
