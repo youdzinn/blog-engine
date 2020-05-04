@@ -45,6 +45,7 @@ public class SecurityConstants {
       "/posts/.*",
       "/profile",
       "/stat",
+      "/tag.*",
       "/404",
       "/"
 

@@ -37,7 +37,6 @@ import org.patchca.font.RandomFontFactory;
 import org.patchca.service.ConfigurableCaptchaService;
 import org.patchca.utils.encoder.EncoderHelper;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,9 +78,6 @@ public class AuthService {
     }
     if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
       throw new InvalidAttributeException(Map.of("email", "Email address already registered"));
-    }
-    if (dto.getPassword().length() < 8) {
-      throw new InvalidAttributeException(Map.of("password", "Pwd is shorter than 8 symbols"));
     }
     dto.setPassword(passwordEncoder.encode(dto.getPassword()));
     User user = userDtoToUser.map(dto);

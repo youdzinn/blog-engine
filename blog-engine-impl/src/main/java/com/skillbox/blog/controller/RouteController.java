@@ -19,6 +19,7 @@ public class RouteController {
       "/profile",
       "settings",
       "/stat",
+      "/tag/*",
       "/404"
   })
   public String frontend() {
