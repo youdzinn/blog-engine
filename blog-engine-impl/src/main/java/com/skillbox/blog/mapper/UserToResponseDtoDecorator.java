@@ -18,7 +18,7 @@ public abstract class UserToResponseDtoDecorator implements UserToResponseLoginD
   @Override
   public ResponseUserDto map(User user) {
     ResponseUserDto dto = delegate.map(user);
-    dto.setModerationCount(postRepository.findCountPostsForModeration(user.getId()));
+    dto.setModerationCount(postRepository.findCountPostsForModeration());
     return dto;
   }
 }

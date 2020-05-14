@@ -1,6 +1,7 @@
 package com.skillbox.blog.repository;
 
 import com.skillbox.blog.entity.Post;
+import com.skillbox.blog.entity.enums.ModerationStatus;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,16 +64,18 @@ public interface PostRepository extends JpaRepository<Post, Integer>,
   List<Post> findByDate(String date, Pageable pageable);
 
   @Query(nativeQuery = true, value = "SELECT COUNT(*) FROM post WHERE is_active = 1 "
-      + "AND moderation_status = 'NEW' AND moderator_id = :moderatorId")
-  int findCountPostsForModeration(int moderatorId);
+      + "AND moderation_status = 'NEW'")
+  int findCountPostsForModeration();
 
   @Query(nativeQuery = true, value = "SELECT COUNT(*) FROM post WHERE is_active = 1 "
-      + "AND moderation_status = :status AND moderator_id = :moderatorId")
-  int findCountPostsForModerationByStatus(int moderatorId, String status);
+      + "AND moderation_status = :status")
+  int findCountPostsForModerationByStatus(String status);
 
   @Query(nativeQuery = true, value = "SELECT * FROM post WHERE is_active = 1 "
-      + "AND moderation_status = :status AND moderator_id = :moderatorId")
-  List<Post> findPostsForModerationByStatus(int moderatorId, String status, Pageable pageable);
+      + "AND moderation_status = :status")
+  List<Post> findPostsForModerationByStatus(String status, Pageable pageable);
+
+  Optional<Post> findByIdAndModerationStatusNot(int id, ModerationStatus ms);
 
   @Query(nativeQuery = true, value = "SELECT p.* FROM be.post p "
       + "JOIN be.post2tag ON post_id = p.id JOIN be.tag ON tag_id = tag.id "

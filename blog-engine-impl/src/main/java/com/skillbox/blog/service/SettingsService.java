@@ -13,9 +13,9 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class SettingsService {
 
-  GlobalSettingRepository repository;
-  UserService userService;
-  GlobalSettingsConfigToDto mapper;
+  private GlobalSettingRepository repository;
+  private UserService userService;
+  private GlobalSettingsConfigToDto mapper;
 
   public GlobalSettingsDto getSettings() {
     if (userService.getCurrentUser().getIsModerator() == 1) {

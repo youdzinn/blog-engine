@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -22,12 +23,12 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @EnableWebSecurity
 @AllArgsConstructor
+@EnableGlobalMethodSecurity(securedEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   private final UserToResponseLoginDto userToResponseLoginDto;
@@ -39,7 +40,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     http.csrf()
         .disable()
         .authorizeRequests()
-//                .antMatchers(SecurityConstants.AUTH_WHITELIST)
         .regexMatchers(SecurityConstants.AUTH_WHITELIST)
         .permitAll()
         .anyRequest()
@@ -47,7 +47,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .and()
         .addFilterAt(authenticationFilter(), UsernamePasswordAuthenticationFilter.class)
         .exceptionHandling()
-        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+        .authenticationEntryPoint(this::handleNonWhitelistResources)
         .and()
         .headers()
         .frameOptions()
@@ -62,6 +62,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   @Override
   protected void configure(AuthenticationManagerBuilder auth) throws Exception {
     auth.userDetailsService(userService).passwordEncoder(bCryptPasswordEncoder());
+  }
+
+  private void handleNonWhitelistResources(HttpServletRequest request, HttpServletResponse response,
+      AuthenticationException authException) throws IOException {
+      response.sendRedirect("/404");
   }
 
   @Bean
@@ -87,7 +92,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     response.setStatus(HttpStatus.OK.value());
     objectMapper.writeValue(
         response.getWriter(),
-        new ResponseLoginDto<>()
+        new ResponseLoginDto()
             .setUser(
                 userToResponseLoginDto.map(
                     (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
@@ -102,7 +107,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     response.setStatus(HttpStatus.OK.value());
     objectMapper.writeValue(
         response.getWriter(),
-        new ResponseLoginDto<>()
+        new ResponseLoginDto()
             .setResult(false));
   }
 
@@ -113,7 +118,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     response.setStatus(HttpStatus.OK.value());
     objectMapper.writeValue(
         response.getWriter(),
-        new ResponseResults<>()
+        new ResponseResults()
             .setResult(true));
   }
 }

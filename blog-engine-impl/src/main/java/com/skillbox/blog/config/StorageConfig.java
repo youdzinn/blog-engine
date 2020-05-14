@@ -1,6 +1,7 @@
 package com.skillbox.blog.config;
 
 import com.skillbox.blog.service.ImageService;
+import java.util.Map;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -12,15 +13,17 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class StorageConfig implements WebMvcConfigurer, CommandLineRunner {
 
   @Getter
-  private String location = "upload";
+  private Map<String, String> location = Map.of("UPLOAD", "upload", "AVATARS", "avatars");
 
   @Autowired
   ImageService imageService;
 
   @Override
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
-    registry.addResourceHandler(location + "/*")
-        .addResourceLocations("file:" + location + "/");
+    registry
+        .addResourceHandler(location.values().stream().map(l -> l += "/*").toArray(String[]::new))
+        .addResourceLocations(location.values().stream().map(l -> String.format("file:%s/", l))
+            .toArray(String[]::new));
   }
 
   @Override

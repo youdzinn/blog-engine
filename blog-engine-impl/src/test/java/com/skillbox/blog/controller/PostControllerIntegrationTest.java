@@ -3,7 +3,7 @@ package com.skillbox.blog.controller;
 import com.skillbox.blog.dto.request.RequestLikeDislikeDto;
 import com.skillbox.blog.dto.request.RequestPost;
 import com.skillbox.blog.dto.response.ResponseAllPostsDto;
-import com.skillbox.blog.dto.response.ResponseOnePostDto;
+import com.skillbox.blog.dto.response.ResponsePostDto;
 import com.skillbox.blog.dto.response.ResponseResults;
 import com.skillbox.blog.utils.IntegrationTest;
 import com.skillbox.blog.utils.Utils;
@@ -111,8 +111,8 @@ public class PostControllerIntegrationTest {
     String[] tags = new String[]{"SQL"};
 
     HttpEntity<String> entity = new HttpEntity<>("body", null);
-    ResponseEntity<ResponseOnePostDto> response = testRestTemplate
-        .exchange("/api/post/4", HttpMethod.GET, entity, ResponseOnePostDto.class);
+    ResponseEntity<ResponsePostDto> response = testRestTemplate
+        .exchange("/api/post/4", HttpMethod.GET, entity, ResponsePostDto.class);
 
     Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
     Assertions.assertEquals("Рассказ №5", response.getBody().getTitle());
@@ -157,7 +157,7 @@ public class PostControllerIntegrationTest {
         .exchange("/api/post/like", HttpMethod.POST, entity, ResponseResults.class);
 
     Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-    Assertions.assertEquals(true, response.getBody().getResult());
+    Assertions.assertEquals(true, response.getBody().isResult());
   }
 
   @Test
@@ -227,7 +227,7 @@ public class PostControllerIntegrationTest {
         .exchange("/api/post", HttpMethod.POST, entity, ResponseResults.class);
 
     Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-    Assertions.assertEquals(true, response.getBody().getResult());
+    Assertions.assertEquals(true, response.getBody().isResult());
   }
 
   @Test
@@ -248,7 +248,7 @@ public class PostControllerIntegrationTest {
         .exchange("/api/post", HttpMethod.POST, entity, ResponseResults.class);
 
     Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-    Assertions.assertEquals(false, response.getBody().getResult());
+    Assertions.assertEquals(false, response.getBody().isResult());
   }
 
   @Test
@@ -273,7 +273,7 @@ public class PostControllerIntegrationTest {
         .exchange("/api/post/9", HttpMethod.PUT, entity, ResponseResults.class);
 
     Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-    Assertions.assertEquals(true, response.getBody().getResult());
+    Assertions.assertEquals(true, response.getBody().isResult());
   }
 
   @Test
@@ -288,6 +288,6 @@ public class PostControllerIntegrationTest {
         .exchange("/api/post/dislike", HttpMethod.POST, entity, ResponseResults.class);
 
     Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-    Assertions.assertEquals(true, response.getBody().getResult());
+    Assertions.assertEquals(true, response.getBody().isResult());
   }
 }

@@ -18,13 +18,13 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 public class CommentService {
 
-  PostRepository postRepository;
-  PostService postService;
-  UserService userService;
-  PostCommentRepository postCommentRepository;
+  private PostRepository postRepository;
+  private PostService postService;
+  private UserService userService;
+  private PostCommentRepository postCommentRepository;
   RequestPostToPost requestMapper;
 
-  public ResponseResults<Integer> createComment(RequestCommentDto comment) {
+  public ResponseResults createComment(RequestCommentDto comment) {
     PostComment commentToSave = new PostComment();
     Post post = postRepository.findById(comment.getPostId())
         .orElseThrow(EntityNotFoundException::new);
@@ -45,6 +45,6 @@ public class CommentService {
           .orElseThrow(EntityNotFoundException::new);
       commentToSave.setParentId(parent);
     }
-    return new ResponseResults<Integer>().setId(postCommentRepository.save(commentToSave).getId());
+    return new ResponseResults().setId(postCommentRepository.save(commentToSave).getId());
   }
 }

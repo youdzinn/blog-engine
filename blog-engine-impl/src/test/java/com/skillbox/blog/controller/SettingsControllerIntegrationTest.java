@@ -1,6 +1,7 @@
 package com.skillbox.blog.controller;
 
 import com.skillbox.blog.dto.GlobalSettingsDto;
+import com.skillbox.blog.dto.response.ResponseResults;
 import com.skillbox.blog.utils.IntegrationTest;
 import com.skillbox.blog.utils.Utils;
 import org.junit.jupiter.api.Assertions;
@@ -37,10 +38,12 @@ public class SettingsControllerIntegrationTest {
   @Test
   void getSettings_withoutModeratorAccount_resultBadRequest() {
     HttpEntity<String> entity = new HttpEntity<>("body", Utils.getUserCookie());
-    ResponseEntity<GlobalSettingsDto> response = testRestTemplate
-        .exchange("/api/settings", HttpMethod.GET, entity, GlobalSettingsDto.class);
+    ResponseEntity<ResponseResults> response = testRestTemplate
+        .exchange("/api/settings", HttpMethod.GET, entity, ResponseResults.class);
 
-    Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+    Assertions.assertEquals(false, response.getBody().isResult());
+
   }
 
   @Test
@@ -70,9 +73,11 @@ public class SettingsControllerIntegrationTest {
 
     HttpEntity<GlobalSettingsDto> entity = new HttpEntity<>(globalSettingsDto,
         Utils.getUserCookie());
-    ResponseEntity<GlobalSettingsDto> response = testRestTemplate
-        .exchange("/api/settings", HttpMethod.PUT, entity, GlobalSettingsDto.class);
+    ResponseEntity<ResponseResults> response = testRestTemplate
+        .exchange("/api/settings", HttpMethod.PUT, entity,
+            ResponseResults.class);
 
-    Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+    Assertions.assertEquals(false, response.getBody().isResult());
   }
 }

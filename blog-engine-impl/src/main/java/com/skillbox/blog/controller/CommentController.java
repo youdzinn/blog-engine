@@ -21,7 +21,7 @@ public class CommentController {
 
   @PostMapping("/comment")
   @ResponseStatus(HttpStatus.OK)
-  public ResponseResults<Integer> createComment(@Valid @RequestBody RequestCommentDto comment) {
+  public ResponseResults createComment(@Valid @RequestBody RequestCommentDto comment) {
     return commentService.createComment(comment);
   }
 }

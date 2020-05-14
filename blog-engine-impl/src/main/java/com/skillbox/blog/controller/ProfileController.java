@@ -24,7 +24,7 @@ public class ProfileController {
 
   @PostMapping(value = "/my", consumes = "multipart/form-data")
   @ResponseStatus(HttpStatus.OK)
-  public ResponseResults<?> editProfile(
+  public ResponseResults editProfile(
       @RequestParam(value = "photo", required = false) MultipartFile file,
       @ModelAttribute RequestEditProfileDto request
   ) throws IllegalClassFormatException {
@@ -33,7 +33,7 @@ public class ProfileController {
 
   @PostMapping(value = "/my")
   @ResponseStatus(HttpStatus.OK)
-  public ResponseResults<?> editProfile(
+  public ResponseResults editProfile(
       @RequestBody RequestEditProfileDto request) throws IllegalClassFormatException {
     return profileService.editProfile(request, null);
   }

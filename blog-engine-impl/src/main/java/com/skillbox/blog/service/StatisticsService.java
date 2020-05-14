@@ -16,11 +16,11 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 public class StatisticsService {
 
-  PostRepository postRepository;
-  PostVoteRepository postVoteRepository;
-  UserService userService;
-  GlobalSettingRepository repository;
-  PostService postService;
+  private PostRepository postRepository;
+  private PostVoteRepository postVoteRepository;
+  private UserService userService;
+  private GlobalSettingRepository repository;
+  private PostService postService;
 
   public ResponseStatisticsDto getStatisticsForCurrentUser() {
     int userId = userService.getCurrentUser().getId();

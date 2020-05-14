@@ -1,5 +1,6 @@
 package com.skillbox.blog.service;
 
+import com.skillbox.blog.config.StorageConfig;
 import com.skillbox.blog.dto.request.RequestEditProfileDto;
 import com.skillbox.blog.dto.response.ResponseResults;
 import com.skillbox.blog.entity.User;
@@ -28,8 +29,9 @@ public class ProfileService {
   private UserService userService;
   private ImageService imageService;
   private PasswordEncoder passwordEncoder;
+  private StorageConfig storageConfig;
 
-  public ResponseResults<?> editProfile(RequestEditProfileDto request, MultipartFile file)
+  public ResponseResults editProfile(RequestEditProfileDto request, MultipartFile file)
       throws IllegalClassFormatException {
     Map<String, String> errors = new LinkedHashMap<>();
     User user = userService.getCurrentUser();
@@ -52,7 +54,7 @@ public class ProfileService {
       user.setPassword(passwordEncoder.encode(password));
     }
     userRepository.save(user);
-    return new ResponseResults<>()
+    return new ResponseResults()
         .setResult(true);
   }
 
@@ -99,7 +101,7 @@ public class ProfileService {
       }
       File oldPhoto = new File(user.getPhoto());
       oldPhoto.delete();
-      user.setPhoto(imageService.uploadImage(file));
+      user.setPhoto(imageService.uploadImage(file, storageConfig.getLocation().get("AVATARS")));
     }
   }
 }

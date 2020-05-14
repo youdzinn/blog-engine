@@ -6,7 +6,7 @@ import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
-public class ResponseLoginDto<T extends Object> extends ResponseResults<Object> {
+public class ResponseLoginDto extends ResponseResults {
 
   @JsonInclude(JsonInclude.Include.NON_NULL)
   ResponseUserDto user;

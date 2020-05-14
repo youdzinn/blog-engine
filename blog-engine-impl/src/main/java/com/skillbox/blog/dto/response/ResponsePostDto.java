@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResponseOnePostDto {
+public class ResponsePostDto {
 
   int id;
   String time;
