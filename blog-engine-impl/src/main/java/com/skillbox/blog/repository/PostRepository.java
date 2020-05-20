@@ -77,8 +77,8 @@ public interface PostRepository extends JpaRepository<Post, Integer>,
 
   Optional<Post> findByIdAndModerationStatusNot(int id, ModerationStatus ms);
 
-  @Query(nativeQuery = true, value = "SELECT p.* FROM be.post p "
-      + "JOIN be.post2tag ON post_id = p.id JOIN be.tag ON tag_id = tag.id "
+  @Query(nativeQuery = true, value = "SELECT p.* FROM post p "
+      + "JOIN post2tag ON post_id = p.id JOIN tag ON tag_id = tag.id "
       + "WHERE tag.name = :tag AND p.is_active = 1 AND p.moderation_status = 'ACCEPTED'")
   List<Post> findAllByTag(String tag, Pageable pageable);
 
