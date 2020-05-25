@@ -1,5 +1,7 @@
 server:
   port: 8080
+  tomcat:
+    max-swallow-size: -1
 
 global-settings:
   globalSettings:
@@ -20,6 +22,10 @@ spring:
   output:
     ansi:
       enabled: ALWAYS
+
+  servlet:
+    multipart.max-file-size: 3MB
+
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQL94Dialect
     show-sql: true
@@ -45,22 +51,26 @@ spring:
           starttls:
             enable: true
 
-  http:
-    multipart:
-      max-file-size: 5MB
-      max-request-size: -1
-      file-size-threshold: 100KB
-      enabled: true
-      location: ${java.io.tmpdir}
-
 ---
 
 spring:
   profiles: default
+#    active: default
+
+#  security:
+#    basic:
+#      enabled: false
+#  management:
+#    security:
+#      enabled: false
+
+
 
   datasource:
     driverClassName: com.p6spy.engine.spy.P6SpyDriver
+#    driverClassName: org.postgresql.Driver
     url: jdbc:p6spy:postgresql://localhost:5432/sklbx?currentSchema=be
+#    url: jdbc:postgresql://localhost:5432/sklbx?currentSchema=be
     username: postgres
     password: 1234
     hikari:
