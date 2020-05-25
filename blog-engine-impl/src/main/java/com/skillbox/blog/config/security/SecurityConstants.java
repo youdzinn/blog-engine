@@ -36,6 +36,7 @@ public class SecurityConstants {
       "/default-1.png",
       "/favicon.ico",
       // frontend paths
+      "/add",
       "/css/.*",
       "/fonts/.*",
       "/js/.*",

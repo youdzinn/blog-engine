@@ -13,6 +13,7 @@ import com.skillbox.blog.entity.Post;
 import com.skillbox.blog.entity.PostVoteEntity;
 import com.skillbox.blog.entity.Tag;
 import com.skillbox.blog.entity.User;
+import com.skillbox.blog.entity.enums.GlobalSettingsValue;
 import com.skillbox.blog.entity.enums.ModerationStatus;
 import com.skillbox.blog.exception.IllegalValueException;
 import com.skillbox.blog.mapper.RequestPostToPost;
@@ -250,9 +251,10 @@ public class PostService {
   }
 
   public ResponseResults createPost(RequestPost post) {
-    byte currentUserStatus = userService.getCurrentUser().getIsModerator();
-    boolean isMultiuserMode = globalSettingRepository.findMultiuserModeValue().equals("YES");
-    if (!isMultiuserMode && currentUserStatus == 0) {
+    boolean isModerator = userService.isModerator();
+    boolean isMultiuserMode = globalSettingRepository.findMultiuserModeValue().equals(
+        GlobalSettingsValue.YES.name());
+    if (!isMultiuserMode && !isModerator) {
       return new ResponseResults().setResult(false);
     }
 
@@ -261,7 +263,7 @@ public class PostService {
     postToSave.setModeratorId(isMultiuserMode ? null : userService.getCurrentUser());
     postToSave.setTagList(updateTags(post.getTags()));
 
-    if (globalSettingRepository.findPostPremoderationValue().equals("NO") || currentUserStatus == 1) {
+    if (globalSettingRepository.findPostPremoderationValue().equals("NO") || isModerator) {
       postToSave.setModerationStatus(ModerationStatus.ACCEPTED);
     }
 

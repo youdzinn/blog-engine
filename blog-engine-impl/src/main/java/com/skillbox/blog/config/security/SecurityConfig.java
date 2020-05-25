@@ -5,6 +5,7 @@ import com.skillbox.blog.config.security.filter.JsonReaderAuthenticationFilter;
 import com.skillbox.blog.dto.response.ResponseLoginDto;
 import com.skillbox.blog.dto.response.ResponseResults;
 import com.skillbox.blog.entity.User;
+import com.skillbox.blog.entity.enums.Role;
 import com.skillbox.blog.mapper.UserToResponseLoginDto;
 import com.skillbox.blog.service.UserService;
 import java.io.IOException;

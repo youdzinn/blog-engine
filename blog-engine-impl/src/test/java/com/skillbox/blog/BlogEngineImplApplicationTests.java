@@ -2,6 +2,7 @@ package com.skillbox.blog;
 
 import com.skillbox.blog.config.GlobalSettingsConfig;
 import com.skillbox.blog.entity.GlobalSetting;
+import com.skillbox.blog.entity.enums.GlobalSettingsValue;
 import com.skillbox.blog.repository.GlobalSettingRepository;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,7 +35,7 @@ class BlogEngineImplApplicationTests {
         .stream().collect(Collectors.toMap(GlobalSettingsConfig.GlobalSettingConfig::getCode,
             GlobalSettingsConfig.GlobalSettingConfig::getValue));
 
-    Map<String, String> persistedSettings = repository.findAll()
+    Map<String, GlobalSettingsValue> persistedSettings = repository.findAll()
         .stream().collect(Collectors.toMap(GlobalSetting::getCode, GlobalSetting::getValue));
 
     Assertions.assertEquals(settings.get(mu), persistedSettings.get(mu));

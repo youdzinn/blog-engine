@@ -34,7 +34,7 @@ public class CommentService {
     commentToSave.setUserId(userService.getCurrentUser());
 
     int parentId;
-    if (comment.getParentId().isEmpty()) {
+    if (comment.getParentId() == null) {
       parentId = 0;
     } else {
       parentId = Integer.parseInt(comment.getParentId());

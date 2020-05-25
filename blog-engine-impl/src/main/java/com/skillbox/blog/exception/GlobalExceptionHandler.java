@@ -18,6 +18,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 @Slf4j
 @RestControllerAdvice
@@ -61,6 +62,16 @@ public class GlobalExceptionHandler {
       AuthenticationCredentialsNotFoundException e) {
     log.error(e.getMessage());
     return new ResponseResults()
+        .setResult(false);
+  }
+
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler(MaxUploadSizeExceededException.class)
+  public ResponseResults handleFileSizeLimitException(
+      MaxUploadSizeExceededException e) {
+    log.error(e.getMessage());
+    return new ResponseResults()
+        .setErrors(Map.of("file", "File too large"))
         .setResult(false);
   }
 
