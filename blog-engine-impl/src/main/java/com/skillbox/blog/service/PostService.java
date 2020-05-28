@@ -34,6 +34,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
@@ -56,15 +57,17 @@ public class PostService {
 
   @Transactional(readOnly = true)
   public ResponseAllPostsDto getPosts(int offset, int limit, String mode) {
-    int count = postRepository.findCountOfSuitablePosts();
+    long count;
     Sort sortMode = Sort.valueOf(mode.toUpperCase());
     Pageable pageable = PageRequest.of(offset / limit, limit);
-    List<Post> posts;
+    Page<Post> posts;
 
     if (sortMode == Sort.POPULAR) {
       posts = postRepository.findPostsByPopular(pageable);
+      count = posts.getTotalElements();
     } else if (sortMode == Sort.BEST) {
       posts = postRepository.findPostsByBest(pageable);
+      count = posts.getTotalElements();
     } else {
       Direction direction = Direction.valueOf("DESC");
       if (sortMode == Sort.EARLY) {
@@ -72,11 +75,12 @@ public class PostService {
       }
       pageable = PageRequest.of(offset / limit, limit, direction, "time");
       posts = postRepository.findSuitablePosts(pageable);
+      count = posts.getTotalElements();
     }
 
     return ResponseAllPostsDto.builder()
         .count(count)
-        .posts(postConversion(posts))
+        .posts(postConversion(posts.getContent()))
         .build();
   }
 
@@ -176,7 +180,6 @@ public class PostService {
   @Transactional(readOnly = true)
   public ResponseAllPostsDto getModerationList(int offset, int limit, String status) {
     Pageable pageable = PageRequest.of(offset / limit, limit);
-    int moderatorId = userService.getCurrentUser().getId();
     int count = postRepository
         .findCountPostsForModerationByStatus(status.toUpperCase());
 

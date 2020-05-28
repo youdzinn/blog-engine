@@ -22,6 +22,7 @@ public class TagService {
 
   public ResponseTagsDto getTags(String query) {
     List<Tag> resultList;
+    float maxWeight;
 
     if (query.isEmpty()) {
       resultList = tagRepository.findAll();
@@ -37,11 +38,13 @@ public class TagService {
           return new TagDto(name, weight);
         })
         .collect(Collectors.toList());
-    float maxWeight = (float) responseTags.stream()
-        .mapToDouble(TagDto::getWeight)
-        .max().orElseThrow(NoSuchElementException::new);
-    responseTags
-        .forEach(t -> t.setWeight(t.getWeight()/maxWeight));
+    if (responseTags.size() > 0) {
+      maxWeight = (float) responseTags.stream()
+          .mapToDouble(TagDto::getWeight)
+          .max().orElseThrow(NoSuchElementException::new);
+      responseTags
+          .forEach(t -> t.setWeight(t.getWeight()/maxWeight));
+    }
     return new ResponseTagsDto(responseTags);
   }
 }

@@ -118,7 +118,7 @@ public class AuthService {
   }
 
   @Transactional(readOnly = true)
-  public ResponseResults checkAuth(HttpServletRequest request, Principal principal) {
+  public ResponseLoginDto checkAuth(HttpServletRequest request, Principal principal) {
     if (principal == null) {
       throw new AuthenticationCredentialsNotFoundException(
           "Session does not exist: " + request.getHeader("Cookie"));

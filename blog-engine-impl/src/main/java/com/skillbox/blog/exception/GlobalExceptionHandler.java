@@ -110,13 +110,10 @@ public class GlobalExceptionHandler {
         .build();
   }
 
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ResponseStatus(HttpStatus.UNAUTHORIZED)
   @ExceptionHandler(AccessDeniedException.class)
-  public ErrorResponse handleStatisticsAccessDeniedException(AccessDeniedException ex) {
+  public void handleStatisticsAccessDeniedException(AccessDeniedException ex) {
     log.error("Access denied: {}", ex.getMessage());
-    return ErrorResponse.builder()
-        .message("Statistics hidden by moderator!")
-        .build();
   }
 
   @ResponseStatus(HttpStatus.OK)
@@ -128,7 +125,7 @@ public class GlobalExceptionHandler {
         .setResult(false);
   }
 
-  @ResponseStatus(HttpStatus.OK)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler(InvalidAttributeException.class)
   public ResponseResults handleInvalidAttributeException(InvalidAttributeException ex) {
     log.error("{}: {}", ex.getMessage(), ex.getErrors());

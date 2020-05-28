@@ -4,6 +4,7 @@ import com.skillbox.blog.dto.request.RequestPasswordDto;
 import com.skillbox.blog.dto.request.RequestPwdRestoreDto;
 import com.skillbox.blog.dto.request.RequestUserDto;
 import com.skillbox.blog.dto.response.ResponseCaptchaDto;
+import com.skillbox.blog.dto.response.ResponseLoginDto;
 import com.skillbox.blog.dto.response.ResponseResults;
 import com.skillbox.blog.service.AuthService;
 import java.io.IOException;
@@ -41,7 +42,7 @@ public class AuthController {
 
   @GetMapping("/check")
   @ResponseStatus(HttpStatus.OK)
-  public ResponseResults check(HttpServletRequest request, Principal principal) {
+  public ResponseLoginDto check(HttpServletRequest request, Principal principal) {
     return authService.checkAuth(request, principal);
   }
 

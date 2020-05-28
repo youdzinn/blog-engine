@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -43,7 +44,7 @@ public interface PostRepository extends JpaRepository<Post, Integer>,
   @Query(nativeQuery = true, value = "SELECT COUNT(*) FROM post WHERE user_id = :userId")
   int findCountPostsForCurrentUser(int userId);
 
-  @Query(nativeQuery = true, value = "SELECT SUM(view_count) FROM post "
+  @Query(nativeQuery = true, value = "SELECT COALESCE(SUM(view_count), 0) FROM post "
       + "WHERE user_id = :userId")
   int findCountViewsOfPostsForCurrentUser(int userId);
 
@@ -57,7 +58,7 @@ public interface PostRepository extends JpaRepository<Post, Integer>,
 
   @Query(nativeQuery = true, value = "SELECT * FROM post WHERE is_active = 1 "
       + "AND moderation_status = 'ACCEPTED' AND time <= NOW()")
-  List<Post> findSuitablePosts(Pageable pageable);
+  Page<Post> findSuitablePosts(Pageable pageable);
 
   @Query(nativeQuery = true, value = "SELECT * FROM post WHERE is_active = 1 "
       + "AND moderation_status = 'ACCEPTED' AND time \\:\\:DATE = :date \\:\\:DATE")
@@ -111,10 +112,42 @@ public interface PostRepository extends JpaRepository<Post, Integer>,
   @Query(nativeQuery = true, value = "SELECT p.id, p.is_active, p.moderation_status, p.text, "
       + "p.time, p.title, p.view_count, p.moderator_id, p.user_id FROM post_comment pc "
       + "LEFT JOIN post p ON pc.post_id = p.id GROUP BY p.id ORDER BY count(p.id) DESC")
-  List<Post> findPostsByPopular(Pageable pageable);
+  Page<Post> findPostsByPopular(Pageable pageable);
 
-  @Query(nativeQuery = true, value = "SELECT p.id, p.is_active, p.moderation_status, p.text, "
-      + "p.time, p.title, p.view_count, p.moderator_id, p.user_id FROM post_vote pv "
-      + "LEFT JOIN post p ON pv.post_id = p.id GROUP BY p.id ORDER BY count(p.id) DESC")
-  List<Post> findPostsByBest(Pageable pageable);
+  // sry for this brain drilling stuff
+  // get posts with any vote only
+  // sorts by likes descending, dislikes ascending
+  @Query(nativeQuery = true,
+      value =
+          "SELECT * FROM (" +
+              "SELECT " +
+              "p.id, p.is_active, p.moderation_status, p.text, p.time, " +
+              "p.title, p.view_count, p.moderator_id, p.user_id, " +
+              "COUNT(CASE pv.value WHEN 1 THEN 1 ELSE NULL END) as likes " +
+              "FROM post p JOIN post_vote pv ON pv.post_id = p.id " +
+              "GROUP BY p.id, pv.value having value = 1) as tmp " +
+              "LEFT JOIN ( " +
+              "SELECT " +
+              "p.id," +
+              "COUNT(CASE pv.value WHEN -1 THEN 1 ELSE NULL END) as dises " +
+              "FROM post p join post_vote pv ON pv.post_id = p.id " +
+              "GROUP BY p.id, pv.value having value = -1) " +
+              "AS tmp1 ON tmp.id = tmp1.id ORDER BY likes DESC, COALESCE(dises, 0) ASC",
+      countQuery =
+          "SELECT COUNT(*) FROM (" +
+              "SELECT p.id FROM post p JOIN post_vote pv ON pv.post_id = p.id " +
+              "GROUP BY p.id, pv.value " +
+              "HAVING value = 1" +
+              ") AS tmp " +
+              "LEFT JOIN (" +
+              "SELECT " +
+              "p.id," +
+              "COUNT(CASE pv.value WHEN -1 THEN 1 ELSE NULL END) AS dises " +
+              "FROM post p JOIN post_vote pv ON pv.post_id = p.id " +
+              "GROUP BY p.id, pv.value " +
+              "having value = -1" +
+              ") AS tmp1 " +
+              "ON tmp.id = tmp1.id   "
+  )
+  Page<Post> findPostsByBest(Pageable pageable);
 }

@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ResponseAllPostsDto {
 
-  int count;
+  long count;
   List<PartInfoOfPosts> posts;
 }

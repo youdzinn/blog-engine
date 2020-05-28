@@ -2,6 +2,7 @@ package com.skillbox.blog.controller;
 
 import com.skillbox.blog.dto.response.ResponseStatisticsDto;
 import com.skillbox.blog.service.StatisticsService;
+import java.security.Principal;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +25,7 @@ public class StatisticsController {
 
   @GetMapping("statistics/all")
   @ResponseStatus(HttpStatus.OK)
-  public ResponseStatisticsDto getStatisticForAll() {
-    return statisticsService.getStatisticForAll();
+  public ResponseStatisticsDto getStatisticForAll(Principal principal) {
+    return statisticsService.getStatisticForAll(principal);
   }
 }

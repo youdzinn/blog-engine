@@ -9,8 +9,8 @@ public class RouteController {
   @RequestMapping(value = {
       "/add",
       "/edit/*",
-      "/calendar/*",
-      "/login",
+      "/calendar",
+      "/calendar/**",
       "/login/**",
       "/moderator/*",
       "/moderation/*",

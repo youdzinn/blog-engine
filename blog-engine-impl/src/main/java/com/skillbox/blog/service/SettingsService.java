@@ -18,10 +18,7 @@ public class SettingsService {
   private GlobalSettingsConfigToDto mapper;
 
   public GlobalSettingsDto getSettings() {
-    if (userService.getCurrentUser().getIsModerator() == 1) {
       return mapper.map(repository.findAll());
-    }
-    throw new StatusException("But it is for You.");
   }
 
   public GlobalSettingsDto saveSettings(GlobalSettingsDto globalSettingsDto) {

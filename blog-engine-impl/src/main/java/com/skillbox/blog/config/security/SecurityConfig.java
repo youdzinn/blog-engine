@@ -5,7 +5,6 @@ import com.skillbox.blog.config.security.filter.JsonReaderAuthenticationFilter;
 import com.skillbox.blog.dto.response.ResponseLoginDto;
 import com.skillbox.blog.dto.response.ResponseResults;
 import com.skillbox.blog.entity.User;
-import com.skillbox.blog.entity.enums.Role;
 import com.skillbox.blog.mapper.UserToResponseLoginDto;
 import com.skillbox.blog.service.UserService;
 import java.io.IOException;
@@ -91,6 +90,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
       HttpServletRequest request, HttpServletResponse response, Authentication authentication)
       throws IOException {
     response.setStatus(HttpStatus.OK.value());
+    setContentTypeJson(response);
     objectMapper.writeValue(
         response.getWriter(),
         new ResponseLoginDto()
@@ -106,6 +106,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
       HttpServletRequest request, HttpServletResponse response, AuthenticationException e)
       throws IOException {
     response.setStatus(HttpStatus.OK.value());
+    setContentTypeJson(response);
     objectMapper.writeValue(
         response.getWriter(),
         new ResponseLoginDto()
@@ -115,11 +116,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   private void logoutSuccessHandler(
       HttpServletRequest request, HttpServletResponse response, Authentication authentication)
       throws IOException {
-
     response.setStatus(HttpStatus.OK.value());
+    setContentTypeJson(response);
     objectMapper.writeValue(
         response.getWriter(),
         new ResponseResults()
             .setResult(true));
+  }
+
+  private void setContentTypeJson(HttpServletResponse response) {
+    response.setHeader("Content-Type", "application/json");
   }
 }
